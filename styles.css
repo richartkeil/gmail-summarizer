@@ -1,0 +1,13 @@
+.gmail-summarizer-button {
+  cursor: pointer;
+}
+
+.gmail-summarizer-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.gmail-summarizer-button .T-I-J3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
