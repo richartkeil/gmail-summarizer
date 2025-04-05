@@ -1,6 +1,121 @@
 // Gmail interface changes frequently, so we need to wait for the toolbar to appear
 // and then add our button
 
+// Cache for storing summaries
+const summaryCache = {};
+
+// Function to generate a unique key for an email
+function generateCacheKey(subject, body) {
+  // Use subject and first 100 chars of body as a unique identifier
+  return `${subject}_${body.slice(0, 100)}`;
+}
+
+// Function to extract the email content
+function getEmailContent() {
+  // Get email subject
+  const subjectElement = document.querySelector('h2[data-thread-id]');
+  const subject = subjectElement ? subjectElement.textContent.trim() : 'No subject';
+  
+  // Get email body
+  const emailBody = document.querySelector('.a3s.aiL');
+  const body = emailBody ? emailBody.innerHTML : '';
+  
+  return { subject, body };
+}
+
+// Function to show the summary in a popup
+function showSummary(summary, cost) {
+  // Create the modal overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'gmail-summarizer-overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100%';
+  overlay.style.height = '100%';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  overlay.style.zIndex = '9999';
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  
+  // Add click event to close when clicking on the background
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      document.body.removeChild(overlay);
+    }
+  });
+  
+  // Create the modal content
+  const modal = document.createElement('div');
+  modal.className = 'gmail-summarizer-modal';
+  modal.style.backgroundColor = 'white';
+  modal.style.borderRadius = '8px';
+  modal.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
+  modal.style.padding = '20px';
+  modal.style.maxWidth = '600px';
+  modal.style.width = '80%';
+  modal.style.maxHeight = '80vh';
+  modal.style.overflow = 'auto';
+  
+  // Create the modal header
+  const header = document.createElement('div');
+  header.style.display = 'flex';
+  header.style.justifyContent = 'space-between';
+  header.style.alignItems = 'center';
+  header.style.marginBottom = '15px';
+  
+  const title = document.createElement('h3');
+  title.textContent = 'Summary';
+  title.style.margin = '0';
+  title.style.fontSize = '18px';
+  title.style.fontWeight = 'bold';
+  
+  header.appendChild(title);
+  
+  // Create content area
+  const content = document.createElement('div');
+  content.className = 'gmail-summarizer-content';
+  
+  // Set the summary content
+  if (summary.startsWith('Error:')) {
+    content.innerHTML = `<p style="color: red;">${summary}</p>`;
+  } else {
+    content.innerHTML = summary;
+  }
+  
+  // Add cost footer if available
+  if (cost) {
+    const costFooter = document.createElement('div');
+    costFooter.className = 'gmail-summarizer-cost';
+    costFooter.textContent = cost;
+    costFooter.style.marginTop = '15px';
+    costFooter.style.fontSize = '11px';
+    costFooter.style.color = '#888';
+    costFooter.style.textAlign = 'right';
+    content.appendChild(costFooter);
+  }
+  
+  // Add loading spinner (initially hidden)
+  const spinner = document.createElement('div');
+  spinner.className = 'gmail-summarizer-spinner';
+  spinner.style.display = 'none';
+  spinner.style.textAlign = 'center';
+  spinner.style.padding = '20px';
+  spinner.innerHTML = 'Generating summary...';
+  
+  // Assemble the modal
+  modal.appendChild(header);
+  modal.appendChild(spinner);
+  modal.appendChild(content);
+  overlay.appendChild(modal);
+  
+  // Add to DOM
+  document.body.appendChild(overlay);
+  
+  return { overlay, content, spinner };
+}
+
 // Function to create our summarize button
 function createSummarizeButton() {
   // Create button container div with the same classes as other buttons
@@ -22,10 +137,63 @@ function createSummarizeButton() {
   `;
   
   // Add click event listener
-  buttonContainer.addEventListener('click', function(e) {
+  buttonContainer.addEventListener('click', async function(e) {
     e.preventDefault();
     e.stopPropagation();
-    alert('Email summarizer clicked!');
+    
+    // Get email content
+    const { subject, body } = getEmailContent();
+    const cacheKey = generateCacheKey(subject, body);
+    
+    // Show modal with loading state
+    const { overlay, content, spinner } = showSummary('');
+    content.style.display = 'none';
+    spinner.style.display = 'block';
+    
+    try {
+      let summary, cost;
+      
+      // Check if we have a cached result
+      if (summaryCache[cacheKey]) {
+        console.log('Using cached summary');
+        ({summary, cost} = summaryCache[cacheKey]);
+      } else {
+        // Call the summarization function if not cached
+        const result = await window.summarizeEmail(subject, body);
+        summary = result.summary;
+        cost = result.cost;
+        
+        // Cache the result
+        summaryCache[cacheKey] = {summary, cost};
+      }
+      
+      // Update the modal with the summary
+      spinner.style.display = 'none';
+      content.style.display = 'block';
+      
+      if (summary.startsWith('Error:')) {
+        content.innerHTML = `<p style="color: red;">${summary}</p>`;
+      } else {
+        content.innerHTML = summary;
+        
+        // Add cost footer
+        if (cost) {
+          const costFooter = document.createElement('div');
+          costFooter.className = 'gmail-summarizer-cost';
+          costFooter.textContent = cost;
+          costFooter.style.marginTop = '15px';
+          costFooter.style.fontSize = '11px';
+          costFooter.style.color = '#888';
+          costFooter.style.textAlign = 'right';
+          content.appendChild(costFooter);
+        }
+      }
+    } catch (error) {
+      // Handle errors
+      spinner.style.display = 'none';
+      content.style.display = 'block';
+      content.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    }
   });
   
   return buttonContainer;

@@ -10,4 +10,60 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Styles for the summary modal */
+.gmail-summarizer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gmail-summarizer-modal {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  max-width: 600px;
+  width: 80%;
+  max-height: 80vh;
+  overflow: auto;
+}
+
+.gmail-summarizer-content {
+  line-height: 1.5;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+.gmail-summarizer-spinner {
+  text-align: center;
+  padding: 20px;
+  color: #5f6368;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+/* Bullet point styling */
+.gmail-summarizer-content ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.gmail-summarizer-content li {
+  margin-bottom: 8px;
+}
+
+/* API cost display */
+.gmail-summarizer-cost {
+  margin-top: 15px;
+  font-size: 11px;
+  color: #888;
+  text-align: right;
+  font-family: 'Roboto', Arial, sans-serif;
 } 

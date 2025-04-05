@@ -3,14 +3,15 @@
   "name": "Gmail Summarizer",
   "version": "1.0",
   "description": "Adds a summarize button to Gmail toolbar",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage"],
   "host_permissions": [
-    "https://mail.google.com/*"
+    "https://mail.google.com/*",
+    "https://api.openai.com/*"
   ],
   "content_scripts": [
     {
       "matches": ["https://mail.google.com/*"],
-      "js": ["content.js"],
+      "js": ["summarizer.js", "content.js"],
       "css": ["styles.css"]
     }
   ]

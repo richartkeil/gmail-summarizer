@@ -1,34 +1,26 @@
 # Gmail Summarizer
 
-A Chrome extension that adds a summarize button to Gmail's toolbar.
+Chrome extension that adds a summarize button to Gmail, generating concise bullet point summaries of emails using OpenAI's GPT-4o.
 
 ## Features
-
-- Adds a "Summarize Email" button to Gmail's toolbar when viewing an email
-- Currently shows an alert when clicked (placeholder for future summarization functionality)
+- Summarizes emails with bullet points in Gmail
+- Caches summaries to avoid regenerating for the same email
+- Displays summaries in a clean modal popup
+- Shows API cost information for transparency
+- Securely stores OpenAI API key
 
 ## Installation
-
-1. Clone this repository or download as ZIP
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" in the top right
-4. Click "Load unpacked" and select the folder containing this extension
-5. The extension is now installed and will activate when you open Gmail
+1. Clone repo or download ZIP
+2. Go to `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked" and select folder
 
 ## Usage
-
-1. Open Gmail in Chrome
-2. Open any email
-3. You should see a new "Summarize" button in the toolbar
-4. Click the button to show an alert
-
-## Development
-
-This extension uses:
-- Manifest V3
-- Content scripts for injecting the button into Gmail's interface
-- MutationObserver to handle Gmail's dynamic DOM updates
+1. Open any email in Gmail
+2. Click the "Summarize Email" button
+3. Enter your OpenAI API key when prompted
+4. View bullet-point summary
+5. Close by clicking anywhere on the background
 
 ## License
-
 MIT 
