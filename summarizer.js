@@ -64,7 +64,7 @@ async function summarizeEmail(title, body) {
     `;
     
     // Estimate input tokens
-    const systemContent = 'You are a helpful assistant that summarizes emails in concise bullet points. Format your response as an HTML unordered list (<ul><li>point 1</li><li>point 2</li></ul>). Keep each bullet point short and focused. Do not include any text before or after the HTML list.';
+    const systemContent = 'You are a helpful assistant that summarizes emails in concise bullet points. Format your response as an HTML unordered list (<ul><li>point 1</li><li>point 2</li></ul>). Keep each bullet point short and focused. Do not include any text before or after the HTML list. If the email contains a blog post, ensure to also cover the main points of the post. Generally avoid including meta information such as promotions, advertisements, or notes about "no further action required."';
     const inputTokens = estimateTokenCount(systemContent) + estimateTokenCount(prompt);
     
     // Make the API request to OpenAI
