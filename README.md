@@ -1,5 +1,8 @@
 # Gmail Summarizer
 
+![](https://img.shields.io/badge/Vibe%20Coded%20With%20-%20%E2%9D%A4%EF%B8%8F%20-%20%23eee?style=flat)
+
+
 Chrome extension that adds a summarize button to Gmail, generating concise bullet point summaries of emails using OpenAI's GPT-4o.
 
 ## Features
